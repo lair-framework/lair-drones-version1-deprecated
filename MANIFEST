@@ -12,5 +12,7 @@ lairdrone/drone_models.py
 lairdrone/exceptions.py
 lairdrone/helper.py
 lairdrone/lair_models.py
+lairdrone/nessus.py
+lairdrone/nexpose.py
 lairdrone/nmap.py
 lairdrone/raw.py

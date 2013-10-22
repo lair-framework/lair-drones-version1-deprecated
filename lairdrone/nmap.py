@@ -57,6 +57,10 @@ def parse(project, resource):
             if status.attrib['state'] != 'up':
                 host_dict['alive'] = False
 
+        if status is None or not host_dict.get('alive', False):
+            # Don't import dead hosts
+            continue
+
         # Find the IP address and/or MAC address
         for addr in host.findall('address'):
 
