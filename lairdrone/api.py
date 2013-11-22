@@ -170,6 +170,10 @@ def save(document, db, tool):
         host['is_profiled'] = file_host.get('is_profiled', False)
         host['is_enumerated'] = file_host.get('is_enumerated', False)
 
+        # Include any host notes
+        if file_host['notes']:
+            host['notes'].extend(file_host['notes'])
+
         # Add hostnames
         if len(file_host['hostnames']) > 0:
             # Only update if new host names were identified
