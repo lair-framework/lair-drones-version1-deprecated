@@ -266,6 +266,10 @@ def save(document, db, tool):
             if file_port['notes']:
                 port['notes'].extend(file_port['notes'])
 
+            # Include any credentials
+            if file_port['credentials']:
+                port['credentials'].extend(file_port['credentials'])
+
             if not is_known_port:
                 id = str(ObjectId())
                 port['_id'] = id
