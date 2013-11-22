@@ -78,6 +78,10 @@ def save(document, db, tool):
     :raise: MissingRequiredSchemaField, ProjectDoesNotExistError
     """
 
+    valid_statuses = [lair_models.STATUS_GREY, lair_models.STATUS_BLUE,
+                      lair_models.STATUS_GREEN, lair_models.STATUS_ORANGE,
+                      lair_models.STATUS_RED]
+
     # Validate compatible versions
     version = db.versions.find_one()
     if version['version'] != VERSION:
@@ -206,7 +210,8 @@ def save(document, db, tool):
             if not is_known_host:
                 id = str(ObjectId())
                 host['_id'] = id
-                host['status'] = lair_models.STATUS_GREY
+                s = file_host.get('status', lair_models.STATUS_GREY)
+                host['status'] = s if s in valid_statuses else lair_models.STATUS_GREY
 
             db.hosts.save(host)
 
@@ -260,7 +265,8 @@ def save(document, db, tool):
             if not is_known_port:
                 id = str(ObjectId())
                 port['_id'] = id
-                port['status'] = lair_models.STATUS_GREY
+                s = file_port.get('status', lair_models.STATUS_GREY)
+                port['status'] = s if s in valid_statuses else lair_models.STATUS_GREY
                 now = datetime.utcnow().isoformat()
                 temp_drone_log.append("{0} - New port found: {1}/{2} ({3})".format(
                     now,
@@ -296,7 +302,8 @@ def save(document, db, tool):
         if not is_known_vuln:
             db_vuln = copy.deepcopy(file_vuln)
             id = str(ObjectId())
-            db_vuln['status'] = lair_models.STATUS_GREY
+            s = file_vuln.get('status', lair_models.STATUS_GREY)
+            db_vuln['status'] = s if s in valid_statuses else lair_models.STATUS_GREY
             db_vuln['_id'] = id
             db_vuln['project_id'] = project['_id']
             db_vuln['last_modified_by'] = tool
