@@ -82,8 +82,8 @@ def parse(project, nexpose_file, include_informational=False):
                 exploit.attrib['id']
             )
             note_dict['content'] = "{0}\n{1}".format(
-                exploit.attrib['title'],
-                exploit.attrib['link']
+                exploit.attrib['title'].encode('ascii', 'replace'),
+                exploit.attrib['link'].encode('ascii', 'replace')
             )
             note_dict['last_modified_by'] = TOOL
             v['notes'].append(note_dict)
