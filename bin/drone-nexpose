@@ -37,7 +37,7 @@ if __name__ == '__main__':
     # Connect to the database
     db = api.db_connect()
 
-    project = nexpose.parse(args[0], args[1], options)
+    project = nexpose.parse(args[0], args[1], options.include_informational)
 
     api.save(project, db, nexpose.TOOL)
 

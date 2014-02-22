@@ -51,6 +51,6 @@ if __name__ == '__main__':
     # Connect to the database
     db = api.db_connect()
 
-    project = nessus.parse(args[0], args[1], options)
+    project = nessus.parse(args[0], args[1], options.include_informational, options.min_note_severity)
     api.save(project, db, nessus.TOOL)
     exit(0)
