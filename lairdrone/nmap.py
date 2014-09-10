@@ -4,6 +4,7 @@
 
 import os
 import copy
+import re
 import xml.etree.ElementTree as et
 from lairdrone import drone_models as models
 from lairdrone import helper
@@ -11,8 +12,93 @@ from lairdrone import helper
 OS_WEIGHT = 50
 TOOL = "nmap"
 
+def parse_grep(project, resource):
+    """Parses an Nmap Grepable file and updates the Lair database
 
-def parse(project, resource):
+    :param project: The project id
+    :param resource: The Nmap grepable file or string to be parsed
+    """
+    command_pattern = re.compile('as: (.+)\n')
+    host_status_pattern = re.compile('Host: ([0-9.]*)\s(.+)\sStatus: (\w+)')
+    host_service_line = re.compile('Host: ([0-9.]*).*?Ports:(.*)')
+    host_service_pattern = re.compile('\s(\d+)\/([^/]+)?\/([^/]+)?\/([^/]+)?\/([^/]+)?\/([^/]+)?\/([^/]+)?\/')
+    contents = ''
+
+    try:
+        if os.path.isfile(resource):
+            with open(resource, 'r') as fh:
+                contents = fh.read()
+        else:
+            pass
+    except Exception as exception:
+        print exception
+
+    # Create the project dictionary which acts as foundation of document
+    project_dict = copy.deepcopy(models.project_model)
+    project_dict['project_id'] = project
+
+    # Pull the command from the file
+    command_dict = copy.deepcopy(models.command_model)
+    command_dict['tool'] = TOOL
+
+    command_results = command_pattern.findall(contents)
+    command_dict['command'] = command_results[0] if len(command_results) else ''
+
+    project_dict['commands'].append(command_dict)
+
+    # Process each 'host' in the file
+    for host_match in host_status_pattern.findall(contents):
+        host_ip, host_name, status = host_match
+        
+        host_dict = copy.deepcopy(models.host_model)
+
+        # Parse the host status
+        if status != 'Up':
+            host_dict['alive'] = False
+
+        if not host_dict.get('alive',False):
+            # Don't import dead hosts
+            continue
+
+        # Parse the host IP
+        host_dict['string_addr'] = host_ip
+
+        # Parse the host name
+        host_dict['hostnames'].append(host_name.strip('() '))
+
+        # Find the ports
+        for service_line_match in host_service_line.findall(contents):
+            ip, service_details = service_line_match
+            for port_match in host_service_pattern.findall(service_details):
+                port, state, protocol, owner, service, rpc_info, version = port_match
+                port_dict = copy.deepcopy(models.port_model)
+                if host_ip == ip:
+                    port_dict['port'] = int(port)
+                    port_dict['protocol'] = protocol
+
+                    # Parse port status
+                    if state != 'open':
+                        continue
+                    port_dict['alive'] = True
+
+                    # Parse port service and product
+                    port_dict['service'] = service
+                    port_dict['product'] = version
+
+                    host_dict['ports'].append(port_dict)
+
+        # Find the Operating System
+        # TODO: grep output may not be sufficient.
+        # os_dict = copy.deepcopy(models.os_model)
+        # os_dict['tool'] = TOOL
+
+        # host_dict['os'].append(os_dict)
+
+        project_dict['hosts'].append(host_dict)
+    return project_dict
+
+
+def parse_xml(project, resource):
     """Parses an Nmap XML file and updates the Lair database
 
     :param project: The project id
