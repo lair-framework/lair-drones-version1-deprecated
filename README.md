@@ -16,14 +16,14 @@ You can install the drones to PATH with pip
 
 drone-nmap is now configurable to accept both -oX and -oG report formats. To have drone-nmap gather information from grepable nmap report files, use:
 
-        drone-nmap -p <pid> -f /path/to/nmap-grepable.txt -r grep
+        drone-nmap <pid> /path/to/nmap-grepable.txt grep
 
 To import XML reports, use:
 
-        drone-nmap -p <pid> -f /path/to/nmap.xml -r xml
+        drone-nmap <pid> /path/to/nmap.xml xml
 
 or
 
-        drone-nmap -p <pid> -f /path/to/nmap.xml
+        drone-nmap <pid> /path/to/nmap.xml
 
 drone-nmap will always default the report format to XML.

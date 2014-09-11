@@ -24,26 +24,29 @@ def main():
     parser = OptionParser(usage=usage, description=description,
                           version="%prog 0.0.1")
 
-    parser.add_option('-p', '--project-id', dest='project_id')
-    parser.add_option('-f', '--file', dest='file')
-    parser.add_option('-r', '--result-format', dest='result_format', 
-        help='nmap file output format [xml,grep] (default: xml)', default='xml')
-
     (options, args) = parser.parse_args()
-    # required input params: project_id, file
-    if not options.project_id or not options.file:
+    if len(args) < 2 or len(args) > 3:
         print parser.get_usage()
         sys.exit(1)
-    # Connect to the database
-    db = api.db_connect()
 
-    if options.result_format == 'xml':
-        project = nmap.parse_xml(options.project_id, options.file)
-    elif options.result_format == 'grep':
-        project = nmap.parse_grep(options.project_id, options.file)
+    # Parse commandline args, default result_format to xml
+    try:
+        project_id, file_path, result_format = args
+    except:
+        project_id, file_path = args
+        result_format = 'xml'
+
+    if result_format == 'xml':
+        project = nmap.parse_xml(project_id, file_path)
+    elif result_format == 'grep':
+        project = nmap.parse_grep(project_id, file_path)
     else:
         print parser.get_usage()
         sys.exit(1)
+    
+    # Connect to the database
+    db = api.db_connect()
+    
     api.save(project, db, nmap.TOOL)
     sys.exit(0)
 
