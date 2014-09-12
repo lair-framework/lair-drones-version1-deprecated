@@ -31,15 +31,15 @@ def main():
 
     # Parse commandline args, default result_format to xml
     try:
-        project_id, file_path, result_format = args
+        project_id, result_resource, result_format = args
     except:
-        project_id, file_path = args
+        project_id, result_resource = args
         result_format = 'xml'
 
     if result_format == 'xml':
-        project = nmap.parse_xml(project_id, file_path)
+        project = nmap.parse_xml(project_id, result_resource)
     elif result_format == 'grep':
-        project = nmap.parse_grep(project_id, file_path)
+        project = nmap.parse_grep(project_id, result_resource)
     else:
         print parser.get_usage()
         sys.exit(1)

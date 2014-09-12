@@ -24,12 +24,13 @@ def parse_grep(project, resource):
     host_service_pattern = re.compile('\s(\d+)\/([^/]+)?\/([^/]+)?\/([^/]+)?\/([^/]+)?\/([^/]+)?\/([^/]+)?\/')
     contents = ''
 
+    # Attempt to parse resource as file or string
     try:
         if os.path.isfile(resource):
             with open(resource, 'r') as fh:
                 contents = fh.read()
         else:
-            pass
+            contents = resource
     except Exception as exception:
         print exception
 
@@ -87,12 +88,8 @@ def parse_grep(project, resource):
 
                     host_dict['ports'].append(port_dict)
 
-        # Find the Operating System
-        # TODO: grep output may not be sufficient.
-        # os_dict = copy.deepcopy(models.os_model)
-        # os_dict['tool'] = TOOL
-
-        # host_dict['os'].append(os_dict)
+        # OS detection output with grepable output is shoddy,
+        # will have to use other methods to pull OS if desired.
 
         project_dict['hosts'].append(host_dict)
     return project_dict
