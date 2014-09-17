@@ -7,9 +7,23 @@ Lair takes a different approach to uploading, parsing, and ingestion of automate
 With the environment variable set you will need a project id to import data. You can grab this from the upper right corner of the lair dashboard next to the project name. You can now run any drones.
 
 
-        drone-nmap <pid> /path/to/nmap.xml
-
 You can install the drones to PATH with pip
 
-
         pip install lairdrone-<version>.tar.gz
+
+
+#### drone-nmap options
+
+drone-nmap is now configurable to accept both -oX and -oG report formats. To have drone-nmap gather information from grepable nmap report files, use:
+
+        drone-nmap <pid> /path/to/nmap-grepable.txt grep
+
+To import XML reports, use:
+
+        drone-nmap <pid> /path/to/nmap.xml xml
+
+or
+
+        drone-nmap <pid> /path/to/nmap.xml
+
+drone-nmap will always default the report format to XML.

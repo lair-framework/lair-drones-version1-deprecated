@@ -19,18 +19,34 @@ def main():
     :return:
     """
 
-    usage = "usage: %prog <project_id> <file>"
+    usage = "usage: %prog <project_id> <file> [xml|grep] (default xml)"
     description = "%prog imports Nmap files into Lair"
     parser = OptionParser(usage=usage, description=description,
                           version="%prog 0.0.1")
+
     (options, args) = parser.parse_args()
-    if len(args) != 2:
+    if len(args) < 2 or len(args) > 3:
         print parser.get_usage()
         sys.exit(1)
+
+    # Parse commandline args, default result_format to xml
+    try:
+        project_id, result_resource, result_format = args
+    except:
+        project_id, result_resource = args
+        result_format = 'xml'
+
+    if result_format == 'xml':
+        project = nmap.parse_xml(project_id, result_resource)
+    elif result_format == 'grep':
+        project = nmap.parse_grep(project_id, result_resource)
+    else:
+        print parser.get_usage()
+        sys.exit(1)
+    
     # Connect to the database
     db = api.db_connect()
-
-    project = nmap.parse(args[0], args[1])
+    
     api.save(project, db, nmap.TOOL)
     sys.exit(0)
 
