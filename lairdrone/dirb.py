@@ -3,7 +3,6 @@
 import os
 import copy
 import re
-import xml.etree.ElementTree as et
 from urlparse import urlparse
 from lairdrone import drone_models as models
 from lairdrone import helper
