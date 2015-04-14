@@ -57,6 +57,7 @@ host_model = {
     'string_addr': '',
     'mac_addr': '',
     'hostnames': [],            # Strings
+    'web': [],                  # web_models
     'os': [],                   # os_models
     'notes': [],
     'alive': True,
@@ -107,4 +108,12 @@ project_model = {
     'drone_log': [],
     'messages': [],             # attack_models
     'files': []
+}
+
+web_model = {
+    'path': '',
+    'path_clean': '',
+    'port': '',
+    'response_code': '',
+    'flag': False,
 }

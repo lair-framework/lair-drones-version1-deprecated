@@ -53,6 +53,7 @@ host_model = {
     'string_addr': '',
     'mac_addr': '',
     'hostnames': [],            # Strings
+    'web': [],                  # web_models
     'os': [],                   # os_models
     'alive': True,
     'status': STATUS_UNDETERMINED,
@@ -113,4 +114,12 @@ project_model = {
     'vulnerabilities': [],      # vulnerability_models
     'attacks': [],              # attack_models
     'drone_log': []
+}
+
+web_model = {
+    'path': '',
+    'path_clean': '',
+    'port': '',
+    'response_code': '',
+    'flag': False,
 }

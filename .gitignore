@@ -5,3 +5,4 @@
 *.swp
 dist
 dist/*.tar.gz
+env/

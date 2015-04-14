@@ -205,6 +205,24 @@ def save(document, db, tool):
 
             host['os'].extend(os_list)
 
+        # Add web paths
+        if file_host['web']:
+            path_list = []
+            for file_path in file_host['web']:
+                dupe_found = False
+                for db_path in host['web']:
+                    if db_path['path'] == file_path['path'] and \
+                        db_path['path_clean'] == file_path['path_clean'] and \
+                        db_path['port'] == file_path['port'] and \
+                        db_path['response_code'] == file_path['response_code']:
+                        dupe_found = True
+
+                if not dupe_found:
+                    path_list.append(file_path)
+                    host['last_modified_by'] = tool
+
+            host['web'].extend(path_list)
+
         post_md5 = hashlib.md5()
         post_md5.update(str(host))
 
