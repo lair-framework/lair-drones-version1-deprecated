@@ -88,7 +88,7 @@ def extract_data(contents):
 
 		# base_url at this point is a tuple, with the 2nd item value 
 		# being the 2nd matched group, so we can disregard that.
-		base_url = base_url[0]
+		base_url = base_url[0] if not base_url[0].endswith('/') else base_url[0][:-1]
 		parsed_url = urlparse(base_url)
 		port = parsed_url.port if parsed_url.port else 80
 	except Exception as exception:

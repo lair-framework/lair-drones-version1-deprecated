@@ -260,6 +260,9 @@ def save(document, db, tool):
 
                 if pre_md5 != post_md5:
                     directory['last_modified_by'] = tool
+                    if not is_known_directory:
+                        id = str(ObjectId())
+                        directory['_id'] = id
                     db.web_directories.save(directory)
 
         # Process each port for the host, checking against known ports
