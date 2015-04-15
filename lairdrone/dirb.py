@@ -126,7 +126,6 @@ def parse(project, resource):
 		print exception
 
 	host_ip, arguments, extracted_data = extract_data(contents)
-	# from pprint import pprint; import ipdb; ipdb.set_trace()
 
 	# Create the project dictionary which acts as foundation of document
 	project_dict = copy.deepcopy(models.project_model)
