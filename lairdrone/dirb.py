@@ -142,7 +142,7 @@ def parse(project, resource):
 	# Proecess host data
 	host_dict = copy.deepcopy(models.host_model)
 	host_dict['string_addr'] = host_ip
-	host_dict['web'] = extracted_data
+	host_dict['web_directories'] = extracted_data
 
 	project_dict['hosts'].append(host_dict)
 	return project_dict

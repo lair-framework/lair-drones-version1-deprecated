@@ -57,7 +57,6 @@ host_model = {
     'string_addr': '',
     'mac_addr': '',
     'hostnames': [],            # Strings
-    'web': [],                  # web_models
     'os': [],                   # os_models
     'notes': [],
     'alive': True,
@@ -110,10 +109,13 @@ project_model = {
     'files': []
 }
 
-web_model = {
+web_directory_model = {
+    'project_id': '',
+    'host_id': '',
     'path': '',
     'path_clean': '',
     'port': '',
     'response_code': '',
+    'last_modified_by': '',
     'flag': False,
 }

@@ -205,24 +205,6 @@ def save(document, db, tool):
 
             host['os'].extend(os_list)
 
-        # Add web paths
-        if file_host['web']:
-            path_list = []
-            for file_path in file_host['web']:
-                dupe_found = False
-                for db_path in host['web']:
-                    if db_path['path'] == file_path['path'] and \
-                        db_path['path_clean'] == file_path['path_clean'] and \
-                        db_path['port'] == file_path['port'] and \
-                        db_path['response_code'] == file_path['response_code']:
-                        dupe_found = True
-
-                if not dupe_found:
-                    path_list.append(file_path)
-                    host['last_modified_by'] = tool
-
-            host['web'].extend(path_list)
-
         post_md5 = hashlib.md5()
         post_md5.update(str(host))
 
@@ -243,6 +225,42 @@ def save(document, db, tool):
                 now,
                 file_host['string_addr'])
             )
+
+        # Process each web directory for the host, checking against existing dirs
+        if 'web_directories' in file_host:
+            for file_directory in file_host['web_directories']:
+
+                q = {
+                    'project_id': project['_id'],
+                    'host_id': host['_id'],
+                    'path_clean': file_directory['path_clean'],
+                    'port': file_directory['port'],
+                    'response_code': file_directory['response_code'],
+                }
+                directory = db.web_directories.find_one(q)
+
+                is_known_directory = False
+                if directory:
+                    is_known_directory = True
+                else:
+                    directory = copy.deepcopy(lair_models.web_directory_model)
+
+                pre_md5 = hashlib.md5()
+                pre_md5.update(str(directory))
+
+                directory['project_id'] = project['_id']
+                directory['host_id'] = host['_id']
+                directory['path'] = file_directory['path']
+                directory['path_clean'] = file_directory['path_clean']
+                directory['port'] = file_directory['port']
+                directory['response_code'] = file_directory['response_code']
+
+                post_md5 = hashlib.md5()
+                post_md5.update(str(directory))
+
+                if pre_md5 != post_md5:
+                    directory['last_modified_by'] = tool
+                    db.web_directories.save(directory)
 
         # Process each port for the host, checking against known ports
         for file_port in file_host['ports']:
