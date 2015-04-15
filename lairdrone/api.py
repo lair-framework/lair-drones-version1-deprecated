@@ -78,6 +78,7 @@ def save(document, db, tool):
     :raise: MissingRequiredSchemaField, ProjectDoesNotExistError
     """
 
+    has_errors = False
     valid_statuses = [lair_models.STATUS_GREY, lair_models.STATUS_BLUE,
                       lair_models.STATUS_GREEN, lair_models.STATUS_ORANGE,
                       lair_models.STATUS_RED]
@@ -226,6 +227,50 @@ def save(document, db, tool):
                 file_host['string_addr'])
             )
 
+        # Process each web directory for the host, checking against existing dirs
+        if 'web_directories' in file_host:
+            # Check if web directories are supported by the remote Lair server.
+            if 'web_directories' in db.collection_names():
+                for file_directory in file_host['web_directories']:
+                    q = {
+                        'project_id': project['_id'],
+                        'host_id': host['_id'],
+                        'path_clean': file_directory['path_clean'],
+                        'port': file_directory['port'],
+                        'response_code': file_directory['response_code'],
+                    }
+                    directory = db.web_directories.find_one(q)
+
+                    is_known_directory = False
+                    if directory:
+                        is_known_directory = True
+                    else:
+                        directory = copy.deepcopy(lair_models.web_directory_model)
+
+                    pre_md5 = hashlib.md5()
+                    pre_md5.update(str(directory))
+
+                    directory['project_id'] = project['_id']
+                    directory['host_id'] = host['_id']
+                    directory['path'] = file_directory['path']
+                    directory['path_clean'] = file_directory['path_clean']
+                    directory['port'] = file_directory['port']
+                    directory['response_code'] = file_directory['response_code']
+
+                    post_md5 = hashlib.md5()
+                    post_md5.update(str(directory))
+
+                    if pre_md5 != post_md5:
+                        directory['last_modified_by'] = tool
+                        if not is_known_directory:
+                            id = str(ObjectId())
+                            directory['_id'] = id
+                        db.web_directories.save(directory)
+            else:
+                has_errors = True
+                print "[!] Your version of Lair does not support the addition of web directories."
+                print "[!] Please check the Lair project on GitHub for more information (https://github.com/lair-framework/lair)."
+
         # Process each port for the host, checking against known ports
         for file_port in file_host['ports']:
 
@@ -365,5 +410,8 @@ def save(document, db, tool):
 
     db.projects.save(project)
 
-    print "[+] Processing completed: {0} host(s) processed.".format(
-        str(len(document['hosts'])))
+    if not has_errors:
+        print "[+] Processing completed: {0} host(s) processed.".format(
+            str(len(document['hosts'])))
+    else:
+        print "[!] Could not process this drone's data. See above for any error messages."

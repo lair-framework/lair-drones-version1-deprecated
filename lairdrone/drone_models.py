@@ -114,3 +114,12 @@ project_model = {
     'attacks': [],              # attack_models
     'drone_log': []
 }
+
+web_directory_model = {
+    'path': '',
+    'path_clean': '',
+    'port': '',
+    'response_code': '',
+    'last_modified_by': '',
+    'flag': False,
+}

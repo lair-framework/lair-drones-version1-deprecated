@@ -108,3 +108,14 @@ project_model = {
     'messages': [],             # attack_models
     'files': []
 }
+
+web_directory_model = {
+    'project_id': '',
+    'host_id': '',
+    'path': '',
+    'path_clean': '',
+    'port': '',
+    'response_code': '',
+    'last_modified_by': '',
+    'flag': False,
+}
