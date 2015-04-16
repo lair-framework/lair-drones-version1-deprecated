@@ -6,6 +6,7 @@ __author__ = 'Dan Kottmann <djkottmann@gmail.com>'
 import os
 import copy
 import hashlib
+import ssl
 from pymongo import ASCENDING, DESCENDING
 from datetime import datetime
 from bson.objectid import ObjectId
@@ -26,7 +27,7 @@ def db_connect():
 
     :return:database connection object
     """
-    from pymongo import Connection, uri_parser
+    from pymongo import MongoClient, uri_parser
 
     # Connect to the database
     if 'MONGO_URL' not in os.environ:
@@ -36,12 +37,12 @@ def db_connect():
     mongo_options = uri_parser.parse_uri(os.environ['MONGO_URL'])
     (host, port) = mongo_options['nodelist'][0]
 
-    ssl = mongo_options['options'].get('ssl', False)
+    is_ssl = mongo_options['options'].get('ssl', False)
 
     print "[+] Attempting connection to database '{0}:{1}/{2}'".format(
         host, str(port), mongo_options['database']
     )
-    conn = Connection(host, port, ssl=ssl)
+    conn = MongoClient(host, port, ssl=is_ssl, ssl_cert_reqs=ssl.CERT_NONE)
     db = conn[mongo_options['database']]
 
     if mongo_options['username'] or mongo_options['password']:
