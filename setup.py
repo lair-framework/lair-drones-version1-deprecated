@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name="lairdrone",
-    version="1.0.0",
+    version="1.0.1",
     author='Dan Kottmann, Tom Steele',
     author_email='dan.kottmann@fishnetsecurity.com, thomas.steele@fishnetsecurity.com',
     packages=['lairdrone'],
