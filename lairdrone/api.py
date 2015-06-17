@@ -364,7 +364,7 @@ def save(document, db, tool):
             now = datetime.utcnow().isoformat()
             temp_drone_log.append("{0} - New vulnerability found: {1}".format(
                 now,
-                file_vuln['title'])
+                file_vuln['title'].encode("utf-8"))
             )
             db.vulnerabilities.save(db_vuln)
 
